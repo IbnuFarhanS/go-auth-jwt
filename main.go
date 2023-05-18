@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/IbnuFarhanS/go-auth-jwt/auth"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -25,38 +26,13 @@ func main() {
 
 	userRouter := r.Group("api/v1/users")
 	//middleware
-	userRouter.Use(AuthMiddleware())
+	userRouter.Use(auth.AuthMiddleware(jwtKey))
 
 	// setup get user profile route
 	userRouter.GET("/:id/profile", profileHandler)
 
 	//start server
 	r.Run(":8080")
-}
-
-func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
-
-		if tokenString == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-			c.Abort()
-			return
-		}
-
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) { return jwtKey, nil })
-
-		if !token.Valid || err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-			c.Abort()
-			return
-		}
-
-		claims := token.Claims.(jwt.MapClaims)
-		c.Set("claims", claims)
-
-		c.Next()
-	}
 }
 
 func loginHandler(c *gin.Context) {

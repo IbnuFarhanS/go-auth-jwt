@@ -1,4 +1,4 @@
-module github.com/farhanshihab.fs/go-auth-jwt
+module github.com/IbnuFarhanS/go-auth-jwt
 
 go 1.20
 
